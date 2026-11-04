@@ -348,7 +348,7 @@ fn main() -> eframe::Result {
             b.with_close_requested_on_terminate(true);
         }));
     }
-    eframe::run_native(
+    let result = eframe::run_native(
         "CADCraft",
         options,
         Box::new(move |cc| {
@@ -376,7 +376,9 @@ fn main() -> eframe::Result {
             // Autosave files (SAVEFILEPATH) default to `<settings dir>/autosave`.
             if let Some(dir) = &vars.config_dir {
                 app.enable_autosave(&dir.join("autosave"));
-                app.enable_update_check();
+                // brian-local: no update check at start-up (an update would install upstream's release over
+                // this build, without its additions); Help › Check for Updates still checks on request.
+                // app.enable_update_check();
                 // Startup LISP (acad.lsp, acaddoc.lsp) is read from `<settings>/support`; the
                 // folder is made so it is there to put them in.
                 let support = dir.join("support");
@@ -396,6 +398,8 @@ fn main() -> eframe::Result {
                 let rx = control_server::start(port, cc.egui_ctx.clone());
                 app = app.with_control(rx);
             }
+            // The AI Assistant pane opens its own channel when the first question is sent.
+            app.assistant.starter = Some(Box::new(|ctx| control_server::start_for_assistant(ctx.clone())));
             if sample {
                 let _ = app.run("ui.sample", serde_json::json!({}));
             }
@@ -426,7 +430,9 @@ fn main() -> eframe::Result {
                 movable: None,
             }))
         }),
-    )
+    );
+    control_server::revoke_assistant();
+    result
 }
 
 #[cfg(test)]

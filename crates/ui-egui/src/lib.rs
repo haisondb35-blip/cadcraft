@@ -19,6 +19,7 @@ pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {
 
 pub mod aliasdlg;
 pub mod animation;
+pub mod assistant;
 pub mod autosave;
 pub mod bedit;
 pub mod canvas;
@@ -249,6 +250,9 @@ pub struct CadApp {
     /// Drawings being read on worker threads ([`opening`]).
     pub opening: opening::Opening,
     pub integrated_titlebar: bool,
+    /// The AI Assistant pane (Window > AI Assistant) and whether it is shown.
+    pub assistant: assistant::Assistant,
+    pub assistant_open: bool,
     control_rx: Option<Receiver<ControlRequest>>,
     /// Fresh surface and identity snapshot (see [`capture`]).
     pub(crate) capture_geometry: Option<capture::CaptureGeometry>,
@@ -341,6 +345,8 @@ impl CadApp {
             status: None,
             opening: opening::Opening::default(),
             integrated_titlebar: false,
+            assistant: assistant::Assistant::default(),
+            assistant_open: false,
             control_rx: None,
             capture_geometry: None,
             capture_epoch: 0,
@@ -902,6 +908,9 @@ impl CadApp {
         if has_doc && !self.ui.show_toolsets {
             palettes::toolsets_strip(self, ui);
         }
+        if self.assistant_open {
+            assistant::side_pane(self, ui);
+        }
         egui::CentralPanel::default().frame(egui::Frame::NONE.fill(t.canvas)).show(ui, |ui| {
             if has_doc {
                 docking::show(self, ui);
@@ -924,7 +933,19 @@ impl CadApp {
 
     /// Drain each queued control request at most once (timed-out requests are skipped), dispatch it to `control::handle` or `capture::admit`, note the resulting capture identity and request a repaint.
     fn drain_control(&mut self, ctx: &egui::Context) {
-        let Some(rx) = self.control_rx.take() else { return };
+        if let Some(rx) = self.control_rx.take() {
+            self.drain_requests(ctx, &rx);
+            self.control_rx = Some(rx);
+        }
+        // The AI Assistant pane's own channel, driven by the Claude (or Codex) it started.
+        if let Some(rx) = self.assistant.control_rx.take() {
+            self.drain_requests(ctx, &rx);
+            self.assistant.control_rx = Some(rx);
+        }
+    }
+
+    /// Handle every request waiting on `rx` (see [`Self::drain_control`]).
+    fn drain_requests(&mut self, ctx: &egui::Context, rx: &Receiver<ControlRequest>) {
         while let Ok(req) = rx.try_recv() {
             // Timed out while queued: the client was told it did not run (#345).
             if !req.begin() {
@@ -942,7 +963,6 @@ impl CadApp {
             capture::note_identity(self, ctx);
             ctx.request_repaint();
         }
-        self.control_rx = Some(rx);
     }
 }
 

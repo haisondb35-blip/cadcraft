@@ -37,6 +37,7 @@ pub const UI_COMMANDS: &[(&str, &str, &[&str], Option<&str>)] = &[
     ("ui.animations.off", "Off", &["View", "Accessibility", "Animation Effects", "Off"], None),
     ("ui.animations", "Animation Effects", &[], None),
     ("ui.toggle.toolbar", "Tool Bar", &["Window", "Tool Bar"], None),
+    ("ui.toggle.assistant", "AI Assistant", &["Window", "AI Assistant"], None),
     ("ui.toggle.filetabs", "File Tab", &["Window", "File Tab"], None),
     ("ui.toggle.statusbar", "Status Bar", &["Window", "Status Bar"], None),
     ("ui.toggle.cmdline", "Command Line", &["Window", "Command Line"], Some("Cmd+9")),
@@ -219,6 +220,10 @@ fn run_ui_toggle_command(app: &mut CadApp, id: &str, params: &Value) -> Option<R
         "ui.toggle.toolbar" => {
             toggle(&mut app.ui.show_toolbar, params);
             Ok(Value::Null)
+        }
+        "ui.toggle.assistant" => {
+            toggle(&mut app.assistant_open, params);
+            Ok(json!({ "on": app.assistant_open }))
         }
         "ui.toggle.filetabs" => {
             toggle(&mut app.ui.show_file_tabs, params);

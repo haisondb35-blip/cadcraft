@@ -88,10 +88,14 @@ pub fn title_and_toolbar(app: &mut CadApp, ui: &mut egui::Ui) {
             let mut clicked = None;
             let mac = ui.ctx().os().is_mac();
             let widths: Vec<_> = TOOLBAR.iter().map(|group| group.len() as f32 * (size + 6.0) - 6.0).collect();
-            let available = (row.right() - 12.0 - x).max(0.0);
+            // The AI Assistant button keeps the row's right end; the commands get the rest.
+            // It is added after the commands, so Tab reaches it last.
+            let assistant_w = crate::assistant::bar_button_width(ui) + 12.0;
+            let available = (row.right() - 12.0 - assistant_w - x).max(0.0);
             let Some(fit) = craft_ui::layout::fit_toolbar(&widths, available, 24.0, 30.0) else {
                 // Very small windows still expose the complete command row by scrolling.
-                ui.scope_builder(egui::UiBuilder::new().max_rect(row.shrink2(vec2(4.0, 0.0))), |ui| {
+                let scroll = Rect::from_min_max(row.min, pos2((row.right() - assistant_w).max(row.left()), row.bottom()));
+                ui.scope_builder(egui::UiBuilder::new().max_rect(scroll.shrink2(vec2(4.0, 0.0))), |ui| {
                     egui::ScrollArea::horizontal().id_salt("toolbar_small").show(ui, |ui| {
                         ui.horizontal(|ui| {
                             for group in TOOLBAR {
@@ -105,6 +109,7 @@ pub fn title_and_toolbar(app: &mut CadApp, ui: &mut egui::Ui) {
                         });
                     });
                 });
+                crate::assistant::bar_button(app, ui, row.right() - 12.0, row.center().y);
                 if let Some(command) = clicked {
                     app.start(command);
                 }
@@ -159,6 +164,7 @@ pub fn title_and_toolbar(app: &mut CadApp, ui: &mut egui::Ui) {
                 });
                 response.on_hover_text(crate::tl!("More toolbar commands"));
             }
+            crate::assistant::bar_button(app, ui, row.right() - 12.0, row.center().y);
             if let Some(c) = clicked {
                 app.start(c);
             }

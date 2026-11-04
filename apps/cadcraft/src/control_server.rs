@@ -81,6 +81,27 @@ pub fn start(port: u16, ctx: egui::Context) -> Receiver<ControlRequest> {
     }
 }
 
+/// The port of the AI Assistant pane's channel, so its token file is removed when the app exits.
+static ASSISTANT_PORT: std::sync::OnceLock<u16> = std::sync::OnceLock::new();
+
+/// A control channel for the AI Assistant pane: a port the system picks on 127.0.0.1, guarded
+/// like `--control` by a token in an owner-only file (`cadcraft-cli mcp --connect` reads it).
+/// `None` when it can't be opened.
+pub fn start_for_assistant(ctx: egui::Context) -> Option<(u16, Receiver<ControlRequest>)> {
+    let listener = TcpListener::bind(("127.0.0.1", 0)).map_err(|e| log::error!("assistant channel: couldn't listen: {e}")).ok()?;
+    let port = listener.local_addr().ok()?.port();
+    let token = cadcraft_mcp::control_token::issue(port).map_err(|e| log::error!("assistant channel: couldn't write the token: {e}")).ok()?;
+    let _ = ASSISTANT_PORT.set(port);
+    Some((port, serve_listener(listener, Limits::default(), ctx, Arc::new(token))))
+}
+
+/// Remove the assistant channel's token file (when the app exits).
+pub fn revoke_assistant() {
+    if let Some(port) = ASSISTANT_PORT.get() {
+        cadcraft_mcp::control_token::revoke(*port);
+    }
+}
+
 /// How long the accepting thread waits after a failed accept. Accepting can keep failing, for
 /// example while the process has no file descriptors left, and retrying at once would keep a
 /// core busy until it recovers.
