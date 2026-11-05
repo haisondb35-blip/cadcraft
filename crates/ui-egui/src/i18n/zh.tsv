@@ -1470,3 +1470,6 @@ menu	Draw	绘图
 menu	Modify	修改
 menu	View	视图
 	AI Assistant	AI 助手
+	Clip Xref	剪裁外部参照
+	Xref	外部参照
+	Xref Clip Frame	外部参照剪裁边框
