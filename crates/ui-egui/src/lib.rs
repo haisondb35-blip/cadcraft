@@ -940,6 +940,8 @@ impl CadApp {
             self.drain_requests(ctx, &rx);
             self.control_rx = Some(rx);
         }
+        // Open from the start and listed for the other Craft apps (once).
+        self.assistant.share(ctx);
         // The AI Assistant pane's own channel, driven by the Claude (or Codex) it started.
         if let Some(rx) = self.assistant.control_rx.take() {
             self.drain_requests(ctx, &rx);
