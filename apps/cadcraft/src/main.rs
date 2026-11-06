@@ -398,6 +398,9 @@ fn main() -> eframe::Result {
                 let rx = control_server::start(port, cc.egui_ctx.clone());
                 app = app.with_control(rx);
             }
+            // Each file's conversation with the assistant is remembered, in the folder all the Craft
+            // apps share (ArtCraft/AI).
+            app.assistant.use_memory(cadcraft_ui_egui::assistant::Store::shared());
             // The AI Assistant pane opens its own channel when the first question is sent.
             app.assistant.starter = Some(Box::new(|ctx| control_server::start_for_assistant(ctx.clone())));
             if sample {
