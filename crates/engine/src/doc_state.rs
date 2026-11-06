@@ -11,8 +11,6 @@ pub struct Snapshot {
 /// One open drawing.
 #[derive(Clone, Debug)]
 pub struct DocState {
-    /// Tells open documents apart while the app runs (not saved; a new one per document).
-    pub uid: u64,
     pub doc: Arc<Drawing>,
     pub undo: Vec<Snapshot>,
     pub redo: Vec<Snapshot>,
@@ -46,17 +44,10 @@ pub struct DocState {
 
 static NEXT_UID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
 
-/// A number no other document of this run has.
-fn next_uid() -> u64 {
-    static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
-    NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
-}
-
 impl DocState {
     pub fn new(doc: Drawing, title: &str, path: Option<String>) -> Self {
         let doc = Arc::new(doc);
         DocState {
-            uid: next_uid(),
             saved: doc.clone(),
             doc,
             undo: Vec::new(),
