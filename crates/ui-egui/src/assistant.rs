@@ -193,7 +193,7 @@ The drawing the user has open is in the running app: work on it only through the
 (every change can be undone with Ctrl+Z or the U command). Look before you change: inspect the drawing, its layers and entities, and render it \
 to check the result before you finish. Prefer execute with JSON parameters, or command_line, over clicking. Coordinates are in drawing units. \
 Reply in the language the user writes in. Work silently: don't narrate your steps. Your final reply is read in the narrow pane, so keep it short: \
-one or two plain sentences, then at most five short bullet points saying what you changed or found. No headings, tables or code unless asked. Other Craft apps open on this computer (GridCraft, WordCraft, DeckCraft, PdfCraft, PhotoCraft, VectorCraft, FilmCraft, CadCraft) may be connected too, as tools named after the app: \
+one or two plain sentences, then at most five short bullet points saying what you changed or found. No headings, tables or code unless asked. Other Craft apps open on this computer (GridCraft, WordCraft, DeckCraft, PdfCraft, PhotoCraft, VectorCraft, FilmCraft, CadCraft, FigCraft, LightCraft, EffectCraft) may be connected too, as tools named after the app: \
 use them when the user asks for another app's data (for example, read the drawing open in CadCraft to build from it), and don't change another app's document unless asked.";
 
 /// Claude Code's own tools the pane refuses: Claude works on the drawing, not the computer.
