@@ -8,6 +8,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 
+pub mod assistant_chat;
 pub mod assoc;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod atomic_write;

@@ -440,6 +440,8 @@ fn save_as(s: &mut Session, cmd: &str, path: &str, opts: &SaveAs) -> Result<usiz
         return Err(bad(cmd, "A block reference is being edited in place: finish with REFCLOSE (Save or Discard) before saving."));
     }
     let bytes = write_bytes(s, cmd, path, opts)?;
+    // Save chat with file: the desktop app's assistant conversation goes into a DXF drawing.
+    let bytes = if is_dxf(path) { crate::assistant_chat::hooked(path, bytes) } else { bytes };
     let n = commit_save(s, path, &bytes, store)?;
     if is_drawing_file(path) {
         let st = s.state_mut()?;

@@ -409,6 +409,11 @@ fn main() -> eframe::Result {
             // Each file's conversation with the assistant is remembered, in the folder all the Craft
             // apps share (ArtCraft/AI).
             app.assistant.use_memory(cadcraft_ui_egui::assistant::Store::shared());
+            // Save chat with file: a DXF drawing's conversation goes into it as it is saved, and
+            // comes back when it is opened.
+            if app.assistant.memory.is_some() {
+                cadcraft_ui_egui::assistant::embed::install(&mut app.assistant);
+            }
             // The AI Assistant pane opens its own channel when the first question is sent.
             app.assistant.starter = Some(Box::new(|ctx| control_server::start_for_assistant(ctx.clone())));
             if sample {
