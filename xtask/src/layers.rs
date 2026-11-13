@@ -37,7 +37,6 @@ pub const TABLE: &[(&str, Class)] = &[
     // a leaf, used by the UI.
     ("craft-sync", Class::Layer(0)),
     ("geom", Class::Layer(0)),
-    ("dxf", Class::Standalone),
     ("dwg", Class::Standalone),
     ("color", Class::Layer(0)),
     ("doc", Class::Layer(1)),
