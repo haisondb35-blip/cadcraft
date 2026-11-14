@@ -614,7 +614,7 @@ checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
 
 [[package]]
 name = "cadcraft"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "cadcraft-engine",
  "cadcraft-io",
@@ -645,7 +645,7 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-cli"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "cadcraft-engine",
  "cadcraft-io",
@@ -661,14 +661,14 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-color"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "cadcraft-constraints"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "cadcraft-doc",
  "cadcraft-geom",
@@ -678,7 +678,7 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-doc"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "cadcraft-color",
  "cadcraft-geom",
@@ -689,7 +689,7 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-dwg"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "acadrust",
  "log",
@@ -697,7 +697,7 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-engine"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "cadcraft-color",
  "cadcraft-constraints",
@@ -718,7 +718,7 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-fonts"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "cadcraft-geom",
  "craft-dxf",
@@ -731,14 +731,14 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-geom"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "cadcraft-io"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "acadrust",
  "cadcraft-color",
@@ -760,7 +760,7 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-mcp"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "cadcraft-engine",
  "cadcraft-io",
@@ -775,7 +775,7 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-render"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "cadcraft-color",
  "cadcraft-doc",
@@ -789,13 +789,14 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-ui-egui"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "cadcraft-color",
  "cadcraft-doc",
  "cadcraft-engine",
  "cadcraft-fonts",
  "cadcraft-geom",
+ "cadcraft-io",
  "cadcraft-render",
  "chrono",
  "craft-sync",
@@ -818,7 +819,7 @@ dependencies = [
 
 [[package]]
 name = "cadcraft-web"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "cadcraft-engine",
  "cadcraft-fonts",
@@ -6031,7 +6032,7 @@ checksum = "9440ea3e5aeabb0ac63af70daf835274065238cdd0cec83418f417eae38bacee"
 
 [[package]]
 name = "xtask"
-version = "0.20.3"
+version = "0.20.4"
 dependencies = [
  "chrono",
  "serde_json",
