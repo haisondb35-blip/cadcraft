@@ -37,6 +37,7 @@ pub mod docking;
 mod drawing_fonts;
 pub mod fault;
 // The Find and Replace window behind the FIND command.
+pub mod arraydlg;
 pub mod finddlg;
 pub mod hatchdlg;
 mod line_editor;
@@ -64,6 +65,7 @@ pub mod menus;
 pub mod modal;
 pub mod opening;
 pub mod options;
+pub mod os_window;
 pub mod palettes;
 pub mod parametric;
 pub mod plotstyles;
@@ -247,7 +249,14 @@ pub struct Services {
     pub no_file_system: bool,
     /// Pick a `.pgp` alias file, starting in the folder given (the last import's).
     pub pick_pgp: Option<Box<dyn Fn(Option<&str>) -> Option<String>>>,
+    /// The app binary's last step as the app leaves, run once at the end of its `on_exit`. On
+    /// macOS every quit ends the process inside AppKit's terminate, after `on_exit`, so code
+    /// after `eframe::run_native` never runs there (the Nightly session record is finished here).
+    pub at_exit: Option<AtExitFn>,
 }
+
+/// Runs once when the app leaves ([`Services::at_exit`]).
+pub type AtExitFn = Box<dyn FnOnce()>;
 
 /// The file dialog to show: Open, Save with the suggested file name, APPLOAD's `.lsp` picker or
 /// ALIASEDIT's `.pgp` picker, starting in the given folder (empty for the default one).
@@ -376,6 +385,8 @@ pub struct CadApp {
     pub alias_dlg: Option<aliasdlg::AliasDlgState>,
     /// The Hatch and Gradient dialog while open or picking ([`hatchdlg`]).
     pub hatch_dlg: Option<hatchdlg::HatchDlgState>,
+    /// The Array dialog while open or picking ([`arraydlg`]).
+    pub array_dlg: Option<arraydlg::ArrayDlgState>,
     /// The Edit Block Definition dialog ([`bedit`]).
     pub bedit: bedit::State,
     /// The Write Block dialog ([`wblock`]).
@@ -443,6 +454,7 @@ impl CadApp {
             autosave_notice: None,
             alias_dlg: None,
             hatch_dlg: None,
+            array_dlg: None,
             bedit: bedit::State::default(),
             wblock: wblock::State::default(),
             #[cfg(not(target_arch = "wasm32"))]
@@ -667,6 +679,17 @@ impl CadApp {
             if !first.is_empty() && !self.paste.running {
                 self.paste.cancel();
             }
+            // A user alias typed alone routes as its command does: an alias of HATCH opens the Hatch
+            // dialog, typed as is or with the Greek layout active. With more on the line
+            // (`KR P ANSI31`) it goes to the engine, which runs the command with those inputs.
+            let alone = text.split_whitespace().nth(1).is_none();
+            let name = if alone {
+                cadcraft_engine::cmd::file::user_alias_command(first)
+                    .or_else(|| cadcraft_engine::cmd::file::user_alias_command(&name))
+                    .unwrap_or(name)
+            } else {
+                name
+            };
             if !first.is_empty() && !json_form && menus::run_ui_command(self, &name, &Value::Null).is_some() {
                 return None;
             }
