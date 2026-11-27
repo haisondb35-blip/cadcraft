@@ -13,6 +13,10 @@ workspace = true
 # The synced cloud folder every Craft app shares (crates/craft-sync): iCloud Drive and the others.
 craft-sync = { path = "../craft-sync" }
 craft-ui = { workspace = true }
+craft-behavior = { workspace = true }
+craft-host = { workspace = true }
+craft-keymap = { workspace = true, features = ["egui"] }
+craft-theme = { workspace = true }
 cadcraft-geom = { workspace = true }
 cadcraft-color = { workspace = true }
 cadcraft-doc = { workspace = true }
@@ -40,8 +44,6 @@ ureq = { version = "3.4", default-features = false, features = ["rustls-no-provi
 craft-update = { workspace = true }
 
 [dev-dependencies]
-# Tests build the dock area as the desktop app does (headless contexts keep floats in-window).
-craft-ui = { workspace = true, features = ["native-windows"] }
 # The workspace `egui` dependency enables `default_fonts` and `monochrome_emoji_fonts` in
 # production too; the tests exercise the same installed chain as the app.
 egui_kittest = { workspace = true, features = ["wgpu", "snapshot"] }
